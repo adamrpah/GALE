@@ -1,0 +1,129 @@
+#!/usr/bin/env python
+'''
+File: network_properties.py
+Author: Adam Pah
+Description: 
+Calculates the network properties of an input network, similar to
+Roger Guimera's netprop code which is a part of the netcarto package,
+but rewritten in python and supporting additional file type inputs.
+'''
+
+#Standard path imports
+from __future__ import division, print_function
+import argparse
+import json
+import os
+import math
+
+#Non-standard imports
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
+import networkx as nx
+import numpy as np
+import gale.networks.file_parser as netfp
+
+#Global directories and variables
+
+def file_reader(args):
+    '''
+    Read in and deciper hte type of the file, returning a graph
+    '''
+    fname, ext = os.path.splitext(args.net_filename)
+    if ext=='json':
+        G = netfp.read_json_netfile(args.net_filename)
+    else:
+        if args.weighted:
+            G = nx.read_edgelist(args.net_filename, data=(('weight',float),))
+        else:
+            G = nx.read_edgelist(args.net_filename)
+    return G
+
+def attribute_print_outs(G):
+    '''
+    Print out the attributes of the network
+    '''
+    #High-level basics
+    print("Number of nodes:\t%d" % G.number_of_nodes())
+    print("Number of edges:\t%d" % G.number_of_edges())
+    print("------")
+    #Components
+    print("Number of components:\t%d" % nx.number_connected_components(G))
+    subgraphs = sorted(nx.connected_component_subgraphs(G), key=len, reverse=True)
+    print("Size of GC:\t%d" % subgraphs[0].number_of_nodes())
+    print("Average size of non-GC components:\t%f" % np.average([x.number_of_nodes() for x in subgraphs[1:]]))
+    print("------")
+    #Degrees and other such
+    degree_set = nx.degree(G)
+    print("Maximum degree:\t %d" % max(degree_set.values()))
+    print("Average degree:\t %f" % np.average(degree_set.values()))
+    print("------")
+    #Clustering and such
+    #clust = nx.clustering(G)
+    #assort = nx.degree_assortativity_coefficient(G)
+    #print("Clustering:\t%f" % np.average(clust.values()))
+    #print("Assortativity:\t%f" % assort)
+
+def output_filename(infname):
+    '''
+    Create the first part of an output filename
+    '''
+    outfname, ext = os.path.splitext(infname)
+    return outfname
+
+def graph_degree_histogram(G, wfname, bins):
+    '''
+    Graph the degree distribution
+    '''
+    degrees = nx.degree(G)
+    max_deg = max(degrees.values())
+    #Set the bins
+    if bins=='lin':
+        xbins = np.linspace(0, max_deg, 50)
+    else:
+        max_exp = math.ceil(np.log10(max_deg))
+        xbins = np.logspace(0, max_exp, 50)
+    with plt.style.context(('bmh')):
+        #Do the distribution
+        fig = plt.figure()
+        ax = plt.subplot(111, axisbg='white')
+        bindata = ax.hist(degrees.values(), normed=True, bins = xbins, color='steelblue')
+        ax.set_xlabel('Degree')
+        ax.set_ylabel('pdf')
+        plt.savefig(wfname + '_degree_distribution.eps')
+        #Do the scatter
+        fig = plt.figure()
+        ax = plt.subplot(111, axisbg='white')
+        #Filter the data
+        xset, yset = [], []
+        for x,y in zip(xbins[:-1], bindata[0]):
+            if y!=0.:
+                xset.append(x)
+                yset.append(y)
+        ax.scatter(xset, yset, color='steelblue')
+        plt.savefig(wfname + '_degree_scatter.eps')
+
+def graph_outputs(G, fname, bins):
+    '''
+    make the graphs
+    '''
+    base_fname = output_filename(fname)
+    graph_degree_histogram(G, base_fname, bins)
+
+def main(args):
+    '''
+    Main function
+    '''
+    G = file_reader(args)
+    attribute_print_outs(G)
+    graph_outputs(G, args.net_filename, args.bins)
+
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Network properties")
+    parser.add_argument('net_filename')
+    parser.add_argument('--weighted', default=False, action='store_true')
+    parser.add_argument('--bins', default='lin', action='store')
+    args = parser.parse_args()
+    main(args)
