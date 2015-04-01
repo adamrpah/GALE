@@ -5,6 +5,8 @@ Description:
 Error Handling
 '''
 
+from __future__ import division, print_function
+
 def generic_error_handler(message=''):
     '''
     Generic handler for custom thrown exceptions.
@@ -12,6 +14,6 @@ def generic_error_handler(message=''):
         m - message to display
     '''
     import sys
-    print 'ERROR: Stopped Execution due to Incorrect Usage'
-    print message
+    print( 'ERROR: Stopped Execution due to Incorrect Usage' )
+    print( message )
     sys.exit()
