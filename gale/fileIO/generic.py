@@ -20,7 +20,7 @@ def random_file_namer(progname, extension):
     
     available = False
     while available==False:
-        tempname = '-'.join([os.path.splitext(progname)[0], str(random.randint(0,10000))]) + '.' + extension
+        tempname = '-'.join([os.path.splitext(progname)[0], str(random.randint(0,100000))]) + '.' + extension
         if not os.path.exists(tempname):
             available=True
     return tempname
