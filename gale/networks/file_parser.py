@@ -63,7 +63,8 @@ def parse_infomap(comfile, netfile='', hierarchy=True):
                 modlisting = sline[0].split(':')
                 del modlisting[-1]
                 #Kill the double quotes, join anything split with aspace in the node name
-                nodename = ' '.join(sline[2:])[1:-1]
+                #nodename = ' '.join(sline[2:])[1:-1]
+                nodename = sline[-1]
                 data.append([modlisting, nodename])
         return data
     
