@@ -94,6 +94,16 @@ def calculate_rmse(known, predicted):
     import numpy as np
     return np.sqrt(calculate_mse(known, predicted))
 
+def calculate_median_error(known, predicted):
+    errors = []
+    for kkey, kvalue in known.items():
+        if kkey in predicted:
+            pvalue = predicted[kkey]
+            errors.append(kvalue - pvalue)
+    import numpy as np
+    return np.median(errors)
+
+
 def calculate_mape(known, predicted):
     '''
     input:

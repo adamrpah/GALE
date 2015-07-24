@@ -117,6 +117,5 @@ def zscore_to_pvalue(z):
     output:
         - pvalue
     '''
-    print >> sys.stderr, "Function is deprecated, use scipy.stats.norm.cdf for zscore to pvalue or scipy.stats.norm.ppf for pvalue to zscore"
     p = 0.5 * (1 + erf(z/sqrt(2)))
     return p

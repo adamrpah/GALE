@@ -20,6 +20,13 @@ def tex_sanitizer(tstr):
     return tstr
 
 def labelifier(tstr):
+    '''
+    Turns a unix-like string to a human readable one for an axis label
+    input:
+        - tstr (str)
+    output:
+        - tstr (str)
+    '''
     import re
     tstr = re.sub('_', ' ', tstr)
     tstr = re.sub('-', ' ', tstr)
