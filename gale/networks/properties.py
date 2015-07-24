@@ -104,7 +104,7 @@ def calculate_inmodule_degree_zscore(G, module2node, node2module):
     #zScore for each node now
     inmod_degree_zscore_dict = {} #node zscore
     for node, mod in node2module.items():
-        inmod_degree_zscore_dict[node] = (inmoduledegree[n] - module_props[mod][0]) / module_props[mod][1]
+        inmod_degree_zscore_dict[node] = (inmoduledegree[node] - module_props[mod][0]) / module_props[mod][1]
     return inmod_degree_zscore_dict
 
 
@@ -119,6 +119,7 @@ def calculate_participation(G, module2node, node2module):
     Output:
         * participation - dictionary
     '''
+    from collections import Counter
     participation = {}
     for node in node2module:
         #Set up the basics
@@ -131,7 +132,7 @@ def calculate_participation(G, module2node, node2module):
             p -= (module_ends.count(um) / degree) ** 2
         #Save it
         participation[node] = p
-    return part_zscore_dict
+    return participation
 
 
 def build_node_roles():

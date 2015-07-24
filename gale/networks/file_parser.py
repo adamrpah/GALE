@@ -63,7 +63,8 @@ def parse_infomap(comfile, netfile='', hierarchy=True):
                 modlisting = sline[0].split(':')
                 del modlisting[-1]
                 #Kill the double quotes, join anything split with aspace in the node name
-                nodename = ' '.join(sline[2:])[1:-1]
+                #nodename = ' '.join(sline[2:])[1:-1]
+                nodename = sline[-1]
                 data.append([modlisting, nodename])
         return data
     
@@ -77,7 +78,13 @@ def parse_infomap(comfile, netfile='', hierarchy=True):
         if node in node2mod:
             m='Duplicitous node identifier'
             gerr.generic_error_handler(message=m)
-        node2mod[node] = '-'.join(mods) 
+        #CHeck on hierarchy
+        if hierarchy == True:
+            modname = '-'.join(mods)
+        else:
+            modname = mods[0]
+        #Add the node2mod
+        node2mod[node] = modname
         #Go through the modules in the listing
         for i in range(len(mods)):
             tmod = '-'.join(mods[:i+1])
