@@ -52,7 +52,7 @@ def barplot(data, ax=None, xlabels=None, ylabel=None, title=None, wfname=None, w
         title
         width, the width of the bars
         wfname, the savename. will save if not none
-    Output: 
+    Output:
         ax
     '''
     #First establish whether the is an axis object or not
@@ -64,7 +64,7 @@ def barplot(data, ax=None, xlabels=None, ylabel=None, title=None, wfname=None, w
     lset = data.keys()
     ind = np.arange(len(lset))
     #Now graph the data
-    ax.bar(ind, [data[l] for l in lset], width) 
+    ax.bar(ind, [data[l] for l in lset], width)
     #Now the axis labels
     if xlabels:
         ax.set_xticks(ind+width/2.0)
@@ -104,3 +104,37 @@ def scatter(xdata, ydata, ax=None, xlabel=None, ylabel=None, title=None, wfname=
     #Saving
     _internal_save(wfname)
     return ax
+
+def survival_curve(data):
+    '''
+    Returns a normalized survival curve (1-cdf) or the ccdf.
+    input:
+        data - list of datapoints
+    output:
+        graphdata - [xdata, ydata]
+    '''
+    #Get the cdf
+    [xdata, ydata] = cdf_curve(data)
+    new_ydata = []
+    for yval in ydata:
+        new_ydata.append(1.0 - yval)
+    return [xdata, new_ydata]
+
+def cdf_curve(data):
+    '''
+    Returns the cdf of a dataset credit to McMullen
+    input:
+        data - list of datapoints
+    output:
+        graphdata - [xdata, ydata]
+    '''
+    #Sort the data
+    sdata = sorted(data)
+    #Hold the data
+    xdata, ydata = [], []
+    #Now start counting
+    len_xset = len(sdata)
+    for i,x in enumerate(sdata):
+        xdata.append(x)
+        ydata.append(i/len_xset)
+    return [xdata, ydata]

@@ -1,7 +1,7 @@
 '''
 File: populateMongo.py
 Author: Adam Pah
-Description: 
+Description:
 Populating mongo collections from standard types
 '''
 
@@ -15,7 +15,7 @@ def from_list(settings, data, naming_scheme, exclusions = [], chunk_size = 10000
         exclusions - headers to ignore in naming_scheme. Must be value in dictionary.
     output:
         None
-    
+
     dependencies: gale
     '''
     import gale.databases.mongoConnect as mcxn
@@ -26,7 +26,7 @@ def from_list(settings, data, naming_scheme, exclusions = [], chunk_size = 10000
             tdict = dict(inclusion)
         else:
             tdict = {}
-        for i, tkey in theader.items(): 
+        for i, tkey in theader.items():
             if trow[i].lower()!='null':
                 tdict[tkey] = trow[i]
         return tdict
@@ -48,7 +48,7 @@ def from_list(settings, data, naming_scheme, exclusions = [], chunk_size = 10000
         err.generic_error_handler(message=m)
 
     data = [_transform_row(naming_scheme, datarow) for datarow in data]
-    
+
     #iterate over subsets of the list
     tdb = mcxn.MongoConnection(settings)
     if len(data) < chunk_size:
@@ -71,19 +71,19 @@ def from_csv(settings, fhandle, exclusions = [], inclusion = {}, chunk_size = 10
     try:
         import pandas as pd
     except ImportError:
-        print "Error: Pandas is not installed, using from_list method"
+        print( "Error: Pandas is not installed, using from_list method" )
         import gale.fileIO.csvHandlers as csvh
         import sys
         indata, header = csvh.read_as_list(fhandle)
         from_list(settings, indata, header)
         sys.exit()
-    
+
     df = pd.read_csv(fhandle)
     header = list(df.columns)
     if exclusions:
         for excl in exclusions:
             header.remove(excl)
-    datalist = [] 
+    datalist = []
     for tline in df.ix[:,header].values:
         tdict = dict(dict(inclusion).items() + dict(zip(header, list(tline))).items())
         datalist.append(tdict)
