@@ -1,0 +1,23 @@
+#! /bin/sh
+
+for FILE in `find "${PWD}" -name \*.pptx -or -name \*.key`; do  
+  DIR=`dirname $FILE`
+  echo Converting $FILE to PDF
+  osascript << EOF
+tell application "System Events"  
+  tell application "Keynote"
+    activate
+    open "${FILE}"
+  end tell
+  tell process "Keynote"
+    click menu item "PDF…" of menu of menu bar item "Share" of menu bar 1
+    click button "Next…" of sheet 1 of window 1
+    keystroke "G" using {command down, shift down}
+    keystroke "${DIR}"
+    click button "Go" of sheet 1 of sheet 1 of window 1
+    click button "Export" of sheet 1 of window 1
+  end tell
+  do shell script "killall Keynote"
+end tell  
+EOF  
+done  
