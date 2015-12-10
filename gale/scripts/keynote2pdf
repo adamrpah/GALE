@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+'''
+File: keynote2pdf.py
+Author: Adam Pah
+Description: 
+Converts a directory of keynote documents to pdfs
+'''
+
+#Standard path imports
+from __future__ import division, print_function
+import argparse
+import os
+import glob
+import re
+
+#Non-standard imports
+
+#Global directories and variables
+
+def fname_handler(inname):
+    ninname = re.sub(' ', '\ ', inname)
+    if '(' in ninname:
+        ninname = '\('.join(ninname.split('('))
+    if ')' in ninname:
+        ninname = '\)'.join(ninname.split(')'))
+    return ninname
+
+def extract_pdf_filenames(keyfile):
+    path_prefix = 'tmp/%s.qlpreview/' % keyfile
+    npath_prefix = fname_handler(path_prefix)
+    
+    #re.sub(' ', '\ ', path_prefix)
+    #if '(' in npath_prefix:
+        #npath_prefix = '\('.join(npath_prefix.split('('))
+    #if ')' in npath_prefix:
+        #npath_prefix = '\)'.join(npath_prefix.split(')'))
+
+    
+
+    html_lines = [l.strip() for l in open(path_prefix + 'Preview.html').readlines() if 'img' in l]
+    file_list = [npath_prefix + l.split('src="')[-1].split('"')[0] for l in html_lines]
+    return file_list
+
+def main(args):
+    if args.directory != './':
+        glob_path = args.directory + '/*.key'
+    else:
+        glob_path = '*.key'
+    #Start iterating
+    for keyfile in glob.glob(glob_path):
+        pdf_file = keyfile.split('.key')[0] + '.pdf'
+        if os.path.exists('tmp') == False:
+            #Make a temporary directory to house this crap
+            os.mkdir('tmp')
+        #Pull out the jamtown
+        os.system('qlmanage -p -o tmp/ "%s"' % keyfile)
+        #Get the proper pdf file listing
+        pdf_file_list = extract_pdf_filenames(keyfile)
+        #Join the pdf files together
+        pdf_file_string = ' '.join(pdf_file_list)
+        os.system('"/System/Library/Automator/Combine PDF Pages.action/Contents/Resources/join.py" -o %s %s;' % (fname_handler(pdf_file), pdf_file_string))
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="")
+    parser.add_argument('directory')
+    args = parser.parse_args()
+    main(args)
+
