@@ -4,6 +4,7 @@ File: keynote2pdf.py
 Author: Adam Pah
 Description: 
 Converts a directory of keynote documents to pdfs
+Hacky hack hack.
 '''
 
 #Standard path imports
@@ -41,29 +42,36 @@ def extract_pdf_filenames(keyfile):
     file_list = [npath_prefix + l.split('src="')[-1].split('"')[0] for l in html_lines]
     return file_list
 
+def file_runner(keyfile):
+    pdf_file = keyfile.split('.key')[0] + '.pdf'
+    if os.path.exists('tmp') == False:
+        #Make a temporary directory to house this crap
+        os.mkdir('tmp')
+    #Pull out the jamtown
+    os.system('qlmanage -p -o tmp/ "%s"' % keyfile)
+    #Get the proper pdf file listing
+    pdf_file_list = extract_pdf_filenames(keyfile)
+    #Join the pdf files together
+    pdf_file_string = ' '.join(pdf_file_list)
+    os.system('"/System/Library/Automator/Combine PDF Pages.action/Contents/Resources/join.py" -o %s %s;' % (fname_handler(pdf_file), pdf_file_string))
+
 def main(args):
     if args.directory != './':
         glob_path = args.directory + '/*.key'
     else:
         glob_path = '*.key'
     #Start iterating
-    for keyfile in glob.glob(glob_path):
-        pdf_file = keyfile.split('.key')[0] + '.pdf'
-        if os.path.exists('tmp') == False:
-            #Make a temporary directory to house this crap
-            os.mkdir('tmp')
-        #Pull out the jamtown
-        os.system('qlmanage -p -o tmp/ "%s"' % keyfile)
-        #Get the proper pdf file listing
-        pdf_file_list = extract_pdf_filenames(keyfile)
-        #Join the pdf files together
-        pdf_file_string = ' '.join(pdf_file_list)
-        os.system('"/System/Library/Automator/Combine PDF Pages.action/Contents/Resources/join.py" -o %s %s;' % (fname_handler(pdf_file), pdf_file_string))
+    if args.single:
+        file_runner(args.directory)
+    else:
+        for keyfile in glob.glob(glob_path):
+            file_runner(keyfile)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="")
     parser.add_argument('directory')
+    parser.add_argument('--single', action='store_true', help='single filename')
     args = parser.parse_args()
     main(args)
 
