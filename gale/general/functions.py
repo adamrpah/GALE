@@ -32,3 +32,25 @@ def labelifier(tstr):
     tstr = re.sub('-', ' ', tstr)
     tstr = ' '.join(map(lambda x: x.capitalize(), tstr.split(' ')))
     return tstr
+
+def pair_setter(tlist, concat='?'):
+    '''
+    Takes a list of lists or tuples and makes the set
+    input:
+        - tlist - list of lists to concat
+        - concat - what to join sublists by, default is ?
+    output:
+        - ulist - unique list of entries
+    '''
+    str_tlist = []
+    for entry in tlist:
+        sentry = [str(ientry) for ientry in entry]
+        str_tlist.append('?'.join(sentry))
+    #Set the list
+    strings = list( set( str_tlist ) )
+    #unpack it
+    ulist = []
+    for sentry in strings:
+        ulist.append(strings.split('?'))
+    return ulist
+
