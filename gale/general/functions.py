@@ -51,6 +51,6 @@ def pair_setter(tlist, concat='?'):
     #unpack it
     ulist = []
     for sentry in strings:
-        ulist.append(strings.split('?'))
+        ulist.append(sentry.split('?'))
     return ulist
 
