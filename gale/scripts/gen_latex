@@ -1,0 +1,5 @@
+#!/bin/bash
+
+targetdir=$1
+
+cp $HOME/Coding/Gale/gale/skeletons/latex/* $targetdir
