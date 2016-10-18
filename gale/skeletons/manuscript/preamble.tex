@@ -1,0 +1,54 @@
+\documentclass[12pt]{article}
+\usepackage{amsfonts,amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage[position=top]{subcaption}
+\usepackage{color}
+\usepackage{url}
+\usepackage{sidecap}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{booktabs}
+\usepackage[margin=1.in]{geometry}
+\usepackage[export]{adjustbox}
+
+%Science Formatting
+\usepackage{scicite}
+\usepackage{times}
+
+\topmargin 0.0cm
+\oddsidemargin 0.2cm
+\textwidth 16cm 
+\textheight 21cm
+\footskip 1.0cm
+
+\newenvironment{sciabstract}{%
+\begin{quote} \bf}
+{\end{quote}}
+
+\newcounter{lastnote}
+\newenvironment{scilastnote}{%
+\setcounter{lastnote}{\value{enumiv}}%
+\addtocounter{lastnote}{+1}%
+\begin{list}%
+{\arabic{lastnote}.}
+{\setlength{\leftmargin}{.22in}}
+{\setlength{\labelsep}{.5em}}}
+{\end{list}}
+
+
+%SI
+\makeatletter
+
+\newcommand\startsupplement{%
+    \makeatletter 
+       \setcounter{table}{0}
+       \renewcommand{\thetable}{SI \arabic{table}}
+       \setcounter{figure}{0}
+       \renewcommand{\thefigure}{SI \arabic{figure}}
+       \setcounter{section}{0}
+       \renewcommand{\thesection}{SI \arabic{section}}
+    \makeatother}
+
+\usepackage{setspace}
+\doublespacing
+
