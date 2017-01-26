@@ -119,3 +119,34 @@ def zscore_to_pvalue(z):
     '''
     p = 0.5 * (1 + erf(z/sqrt(2)))
     return p
+
+###################
+# Statsmodels
+###################
+
+def sm_summary_restrict(summary, dropFE=False, alpha=None):
+    '''
+    Drops fixed effects or nonsignificant predictors. Can do both simultaneously
+    input:
+        * summary - statsmodels summary() object (i.e. smf.ols(formula).fit().summary() )
+        * dropFE - True/False, default is False - drop fixed effects (any predictor with 'C(' in name
+        * alpha - Float, alpha value to drop parameters at (i.e. if predictor is 0.08 and alpha=0.05, predictor will not be included) 
+    output:
+        * summary - statsmodels summary() object
+    '''
+    tblheader = summary.tables[1].data[0]
+    tbldata = []
+    for r in summary.tables[1].data[1:]:
+        if dropFE == True:
+            if 'C(' in r[0]:
+                continue
+            else:
+                pass
+        if alpha != None:
+            if float(r[-2]) < alpha:
+                tbldata.append(r)
+        else:
+            tbldata.append(r)
+    #Add back in our restricted table
+    summary.tables[1] = SimpleTable(tbldata, tblheader)
+    return summary
