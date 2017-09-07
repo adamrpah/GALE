@@ -1,2 +1,2 @@
 #!/bin/bash
-nohup ipython notebook --profile newdefault > /dev/null &
+nohup jupyter notebook --ip=0.0.0.0 > /dev/null &
