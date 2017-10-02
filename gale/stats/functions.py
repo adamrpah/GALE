@@ -152,6 +152,14 @@ def sm_summary_restrict(summary, dropFE=False, alpha=None):
     return summary
 
 def write_statsmodels_glm_result(res, fname):
+    '''
+    Writes a statsmodels GLM result object to a latex table in a given filename
+    input:
+        * res - statsmodels results object
+        * fname - filename to write the resulting latex table to
+    output:
+        None
+    '''
     import re
     latex = res.summary().as_latex()
     latex = '\\begin{tabular}{lc}'.join( latex.split('\\begin{tabular}{lclc}') )
@@ -176,6 +184,14 @@ def write_statsmodels_glm_result(res, fname):
         print(latex, file = f)
 
 def write_statsmodels_ols_result(res, fname):
+    '''
+    Writes a statsmodels OLS result object to a latex table in a given filename
+    input:
+        * res - statsmodels results object
+        * fname - filename to write the resulting latex table to
+    output:
+        None
+    '''
     latex = res.summary().as_latex()
     splatex = latex.split('\\begin{tabular}{lclc}')
     latex = splatex[0] + '\\begin{tabular}{lc}' + splatex[1] + '\\begin{tabular}{lclc}' + splatex[2]
