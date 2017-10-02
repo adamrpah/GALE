@@ -150,3 +150,46 @@ def sm_summary_restrict(summary, dropFE=False, alpha=None):
     #Add back in our restricted table
     summary.tables[1] = SimpleTable(tbldata, tblheader)
     return summary
+
+def write_statsmodels_glm_result(res, fname):
+    import re
+    latex = res.summary().as_latex()
+    latex = '\\begin{tabular}{lc}'.join( latex.split('\\begin{tabular}{lclc}') )
+    top, start_middle = latex.split('\\toprule\n')
+    middle, bottom_one, bottom_two = start_middle.split('\\bottomrule\n')
+    #Split the middle on lines, then split each line at &
+    half_lines = []
+    for line in middle.split('\n'):
+        if '&' in line:
+            half_lines.append( ' & '.join( line.split(' & ')[2:] ) )
+    #Add in the AIC/BIC
+    template_line = '\\textbf{  %s:           } &   %d   \\\\'
+    half_lines.append( template_line % ('AIC', res.aic) )
+    half_lines.append( template_line % ('BIC', res.bic) )
+    #Reconstruct
+    middle = '\n'.join(half_lines) + '\n'
+    latex = top + '\\toprule\n' + middle + '\\bottomrule\n' + bottom_one + '\\bottomrule\n' + bottom_two
+    #Change out the '_' titles so i tdoesn't break latex
+    if '_' in latex:
+        latex = re.sub('_', ' ', latex)
+    with open(fname, 'w') as f:
+        print(latex, file = f)
+
+def write_statsmodels_ols_result(res, fname):
+    latex = res.summary().as_latex()
+    splatex = latex.split('\\begin{tabular}{lclc}')
+    latex = splatex[0] + '\\begin{tabular}{lc}' + splatex[1] + '\\begin{tabular}{lclc}' + splatex[2]
+    top, start_middle = latex.split('\\toprule\n')
+    middle, bottom_one, bottom_two, bottom_three = start_middle.split('\\bottomrule\n')
+    #Split the middle on lines, then split each line at &
+    half_lines = []
+    for line in middle.split('\n'):
+        if '&' in line:
+            half_lines.append( ' & '.join( line.split(' & ')[2:] ) )
+    #Reconstruct
+    middle = '\n'.join(half_lines) + '\n'
+    latex = top + '\\toprule\n' + middle + '\\bottomrule\n' + bottom_one + '\\bottomrule\n' + bottom_two + '\\bottomrule\n' + bottom_three
+    if '_' in latex:
+        latex = re.sub('_', ' ', latex)
+    with open(fname, 'w') as f:
+        print(latex, file = f)
