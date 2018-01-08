@@ -1,92 +1,94 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 '''
-File: notebook_cleaner.py
+File: notebook_cleaner
 Author: Adam Pah
 Description: 
-Cleans the output from a notebook
+Cleans the output of a notebook file and extracts all code cells that start with #[Aa]nswer
 '''
 
 #Standard path imports
 from __future__ import division, print_function
 import argparse
-import sys
+import glob
+import json
 import os
 
 #Non-standard imports
-import json
-import IPython.nbformat.current as nbf
 
 #Global directories and variables
 
-def cell_cleaner(nb):
-    '''
-    Function to "clean" the cells of a notebook, deleting any output and the prompt numbering
-    input:
-        nb - notebook file contents
-    '''
-    #Iterate through each one of the cell objects
-    #Deleting prompt_number and clearing outputs
-    for cell in nb['worksheets'][0]['cells']:
-        if 'prompt_number' in cell:
-            del cell['prompt_number']
-        if 'outputs' in cell:
-            cell['outputs'] = []
 
-def notebook_cleaner(fname):
+def write_answer_file(answers, fpath):
     '''
-    Cleans and writes a notebook
+    Writes out the answer .py file
     input:
-        fname - notebook filename
+        answers - list of answer
+        fpath - fpath name of current file
     '''
-    #Read in the notebook
-    nb = nbf.read(open(fname), 'ipynb')
-    #Clean it
-    cell_cleaner(nb)
-    #Save it back
-    nbf.write(nb, open(fname, 'w'), 'ipynb')
-
-def determine_ipynb(fname):
-    '''
-    Determine if a file is an ipython notebook file or not
-    input:
-        fname - filename
-    output:
-        returns True/False
-    '''
-    ext = os.path.splitext(fname)[-1].lower()
-    if ext == '.ipynb':
-        return True
+    #Get the filename
+    fname, fext = os.path.splitext(os.path.basename(fpath))
+    #write out the code
+    if os.path.exists(fname + '.py'):
+        wfile = open(fname + '.py', 'a') 
     else:
-        return False
+        wfile = open(fname + '.py', 'w') 
+    for answer_set in answers:
+        print(''.join(answer_set), file = wfile)
+        print('\n\n#######\n\n', file = wfile)
+    wfile.close()
+
+def clean_file(fpath, answerdir):
+    '''
+    Cleans an individual file, saving it to its original location.
+    Saves the answers to a new .py file for ease of finding/opening without notebook
+    input:
+        fpath - filepath
+    output:
+        None
+    '''
+    #Answer keys
+    answers, answer_indices = [], []
+    #Load the notebook
+    notebook = json.loads( open(fpath).read() )
+    #Iterate through each cell
+    for i, cell in enumerate(notebook['cells']):
+        #Check for the answer
+        if cell['source'] != []:
+            if '#Answer\n' == cell['source'][0] or '#answer\n' == cell['source'][0]:
+                #Append the index for deletion after
+                answer_indices.append(i)
+                #Add the answer to answers
+                answers.append( cell['source'] )
+        #Kill the output
+        if 'output' in notebook['cells'][i]:
+            notebook['cells'][i]['output'] = []
+    #Delete the answer cells, reverse so that the indices are not disrupted
+    for ai in reversed(answer_indices):
+        del notebook['cells'][ai]
+    #Write out the answer .py
+    if answers != []:
+        write_answer_file(answers, fpath, answerdir)
+    #Save the cleaned notebook back down
+    with open(fpath, 'w') as jfile:
+        jstr = json.dumps( notebook )
+        print(jstr, file=jfile)
+
 
 def main(args):
     '''
-    Determines if a directory search needs to be performed or not
-    Crawls if args.fpath is given
+    Main function to handle file loading/traversal
     '''
-    #If not the fpath option then we should have a notebook
-    if not args.fpath:
-        if determine_ipynb(args.fname):
-            notebook_cleaner(args.fname)
-        else:
-            print( 'ERROR: This is not an IPython notebook' )
-            sys.exit()
-    #Else we start walking from the starting fpath
+    if args.directory == True:
+        for fpath in glob.glob(args.input_path + '/*'):
+            clean_file(fpath, args.answerdir)
     else:
-        for root, dirs, files in os.walk(args.fname):
-            #Make sure that the final folder in the root is not a .ipynb_checkpoints folder
-            if os.path.basename(root) != '.ipynb_checkpoints':
-                #Go through each file to find any ipynb files
-                for tfile in files:
-                    #If it's a notebook let's clean it
-                    if determine_ipynb(tfile):
-                        notebook_cleaner( os.path.join(root, tfile) )
-
+        clean_file(args.input_path, args.answerdir)
+    
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="python %prog filepath")
-    parser.add_argument('fname', type=str, 
-                        help="The notebook filename or filepath when the fpath option is invoked")
-    parser.add_argument('--fpath', default=False, action='store_true',
-                        help="Crawl directories from a supplied starting point, converting all notebooks found")
+    parser = argparse.ArgumentParser(description="")
+    parser.add_argument('input_path', help = "Input file (or path with --directory flag) to be cleaned")
+    parser.add_argument('--directory', action = 'store_true', default=False, help="Clean all notebook files in a directory")
+    parser.add_argumnet('--answerdir', action = 'store', default = '../', help ="Directory to store answer notebooks")
     args = parser.parse_args()
     main(args)
+
