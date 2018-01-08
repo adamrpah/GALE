@@ -18,7 +18,7 @@ import os
 #Global directories and variables
 
 
-def write_answer_file(answers, fpath):
+def write_answer_file(answers, fpath, answerdir):
     '''
     Writes out the answer .py file
     input:
@@ -28,10 +28,10 @@ def write_answer_file(answers, fpath):
     #Get the filename
     fname, fext = os.path.splitext(os.path.basename(fpath))
     #write out the code
-    if os.path.exists(fname + '.py'):
-        wfile = open(fname + '.py', 'a') 
+    if os.path.exists(answerdir + fname + '.py'):
+        wfile = open(answerdir + fname + '.py', 'a') 
     else:
-        wfile = open(fname + '.py', 'w') 
+        wfile = open(answerdir + fname + '.py', 'w') 
     for answer_set in answers:
         print(''.join(answer_set), file = wfile)
         print('\n\n#######\n\n', file = wfile)
