@@ -88,7 +88,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="")
     parser.add_argument('input_path', help = "Input file (or path with --directory flag) to be cleaned")
     parser.add_argument('--directory', action = 'store_true', default=False, help="Clean all notebook files in a directory")
-    parser.add_argumnet('--answerdir', action = 'store', default = '../', help ="Directory to store answer notebooks")
+    parser.add_argument('--answerdir', action = 'store', default = '../', help ="Directory to store answer notebooks")
     args = parser.parse_args()
     main(args)
 
