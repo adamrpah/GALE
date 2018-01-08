@@ -79,9 +79,9 @@ def main(args):
     Main function to handle file loading/traversal
     '''
     if args.directory == True:
-        for fpath in glob.glob(args.input_path + '/*'):
-            if '__pycache__' not in fpath:
-                clean_file(fpath, args.answerdir)
+        for fpath in glob.glob(args.input_path + '/*ipynb'):
+            print(fpath)
+            clean_file(fpath, args.answerdir)
     else:
         clean_file(args.input_path, args.answerdir)
     
