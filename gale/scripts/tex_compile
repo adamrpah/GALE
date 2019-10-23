@@ -1,0 +1,33 @@
+#!/usr/bin/python
+import os,sys
+
+manual="""\nScript to compile a tex document, creating references and displaying it as a pdf 
+after compilation.  The correct usage is: 
+tex_compile.py FILENAME
+where FILENAME does not have the extension, so a file paper.tex is just paper\n"""
+
+def compile(filename):
+    os.system('latex '+filename)
+    os.system('bibtex '+filename)
+    os.system('latex '+filename)
+    os.system('latex '+filename)
+    if sys.platform=='darwin':
+        os.system('dvipdfm '+filename)
+        os.system('open '+filename+'.pdf')
+    elif sys.platform=='linux2':
+        os.system('dvipdf '+filename)
+        os.system('evince '+filename+'.pdf')
+    elif sys.platform=='win32':
+        print 'I am detecting that you are using a windows platform computer. WTF?'
+    else:
+        print 'Cannot detect operating system type in order to issue proper open application command'
+
+if len(sys.argv)!=2:
+    print manual
+else:
+    if sys.argv[1][-4:]=='.tex':
+        compile(sys.argv[1][:-4])
+    elif sys.argv[1][-1]=='.':
+        compile(sys.argv[1][:-1])
+    else:
+        compile(sys.argv[1])
