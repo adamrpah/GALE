@@ -1,19 +1,12 @@
 #!/bin/bash
 
 pushpull=$1
-hgdirs=($HOME/Coding/dotfiles/ $HOME/.vim/)
-gitdirs=($HOME/Coding/Gale)
+gitdirs=($HOME/Coding/Gale $HOME/Coding/dotfiles/ $HOME/.vim/)
 
 
 
 if [ "$pushpull" = "pull" ]
 then 
-    for tdir in ${hgdirs[*]};
-    do 
-        cd $tdir;
-        hg pull;
-        hg up;
-    done
     #Now git
     for tdir in ${gitdirs[*]};
     do 
@@ -22,12 +15,6 @@ then
     done
 elif [ "$pushpull" = "push" ]
 then
-    for tdir in ${hgdirs[*]};
-    do 
-        cd $tdir;
-        hg ci -m "Standard commit fired from the brain";
-        hg push;
-    done
     #Now git
     for tdir in ${gitdirs[*]};
     do 
