@@ -1,3 +1,4 @@
+-- Source is found at: https://github.com/gitmalong/pages2docx
 -- This script recursively traverses a directory and converts all .pages documents to .docx documents
 -- Tested on Mac OS Sierra
 -- Command line usage: osascript pages2docx.applescript ~/Documents/
