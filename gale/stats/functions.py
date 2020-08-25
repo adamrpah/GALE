@@ -134,6 +134,7 @@ def sm_summary_restrict(summary, dropFE=False, alpha=None):
     output:
         * summary - statsmodels summary() object
     '''
+    from statsmodels.iolib.table import SimpleTable
     tblheader = summary.tables[1].data[0]
     tbldata = []
     for r in summary.tables[1].data[1:]:
