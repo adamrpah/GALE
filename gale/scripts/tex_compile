@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import os,sys
 
 manual="""\nScript to compile a tex document, creating references and displaying it as a pdf 
@@ -18,12 +18,12 @@ def compile(filename):
         os.system('dvipdf '+filename)
         os.system('evince '+filename+'.pdf')
     elif sys.platform=='win32':
-        print 'I am detecting that you are using a windows platform computer. WTF?'
+        print('I am detecting that you are using a windows platform computer. WTF?')
     else:
-        print 'Cannot detect operating system type in order to issue proper open application command'
+        print('Cannot detect operating system type in order to issue proper open application command')
 
 if len(sys.argv)!=2:
-    print manual
+    print(manual)
 else:
     if sys.argv[1][-4:]=='.tex':
         compile(sys.argv[1][:-4])
